@@ -2,7 +2,6 @@ import re
 import urllib
 
 import simplejson as json
-import yaml
 
 
 class UrlOpener(urllib.FancyURLopener):
@@ -12,7 +11,7 @@ class InvalidLanguage(Exception): pass
 
 base_uri = "http://ajax.googleapis.com/ajax/services/language/translate"
 default_params = {'v': '1.0'}
-langs = yaml.load(file('langs.yml', 'r').read())
+langs = json.load(file('langs.json', 'r'))
 
 def translate(src, to, phrase):
 	src = langs.get(src, src)
