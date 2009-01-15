@@ -15,6 +15,14 @@ detect_uri = "http://ajax.googleapis.com/ajax/services/language/detect"
 default_params = {'v': '1.0'}
 langs = json.load(file('langs.json', 'r'))
 
+class TranslatedString(str):
+	lang = "auto"
+
+	def to(self, to):
+		t = translate(u'%s' % self, to=to, src=self.lang)
+		t.lang = to
+		return t
+
 def _build_args(dict):
 	args = default_params.copy()
 	args.update(dict)
@@ -42,7 +50,12 @@ def translate(phrase, to, src="auto"):
 	}
 	resp = json.load(UrlOpener().open('%s?%s' % (base_uri, _build_args(args))))
 	try:
-		return resp['responseData']['translatedText']
+		t = TranslatedString(resp['responseData']['translatedText'])
+		t.lang = to
+		return t
 	except:
 		# should probably warn about failed translation
-		return phrase
+		t = TranslatedString(phrase)
+		t.lang = src
+		return t
+
