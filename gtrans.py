@@ -15,7 +15,7 @@ detect_uri = "http://ajax.googleapis.com/ajax/services/language/detect"
 default_params = {'v': '1.0'}
 langs = json.load(file('langs.json', 'r'))
 
-class TranslatedString(str):
+class TranslatedString(unicode):
 	lang = "auto"
 
 	def to(self, to):
@@ -29,7 +29,7 @@ def _build_args(dict):
 	return '&'.join(['%s=%s' % (k,v) for (k,v) in args.iteritems()])
 
 def detect_lang(phrase):
-	args = {'q': urllib.quote_plus(phrase)}
+	args = {'q': urllib.quote_plus(phrase.encode('utf-8'))}
 	resp = json.load(UrlOpener().open('%s?%s' % (detect_uri, _build_args(args))))
 	try:
 		return resp['responseData']['language']
@@ -46,7 +46,7 @@ def translate(phrase, to, src="auto"):
 	
 	args = {
 		'langpair': '%s%%7C%s' % (src, to),
-		'q': urllib.quote_plus(phrase),
+		'q': urllib.quote_plus(phrase.encode('utf-8')),
 	}
 	resp = json.load(UrlOpener().open('%s?%s' % (base_uri, _build_args(args))))
 	try:
@@ -58,4 +58,3 @@ def translate(phrase, to, src="auto"):
 		t = TranslatedString(phrase)
 		t.lang = src
 		return t
-
